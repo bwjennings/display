@@ -20,39 +20,32 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Install Puppeteer and jimp
-        run: npm install puppeteer jimp
+      - name: Install Puppeteer
+        run: npm install puppeteer
       - name: Create Screenshots Directory
         run: mkdir -p screenshots
-      - name: Create screenshot script
+      - name: Take Screenshot and Convert to BMP
         run: |
-          cat << EOF > take_screenshot.js
-          const puppeteer = require('puppeteer');
-          const Jimp = require('jimp');
-
-          async function takeScreenshot() {
+          node -e '
+          const puppeteer = require("puppeteer");
+          (async () => {
             try {
-              const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+              const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
               const page = await browser.newPage();
-              const url = process.env.INPUT_URL || 'https://benjennings.design';
-              await page.goto(url, { waitUntil: 'networkidle2' });
-              const pngBuffer = await page.screenshot();
+              const url = process.env.INPUT_URL || "https://benjennings.design";
+              await page.goto(url, { waitUntil: "networkidle2" });
+              await page.screenshot({ path: "screenshots/screenshot.png" });
               await browser.close();
-
-              const image = await Jimp.read(pngBuffer);
-              const filepath = 'screenshots/screenshot.bmp';
-              await image.writeAsync(filepath);
-              console.log('Screenshot saved to', filepath);
+              console.log("Screenshot saved as PNG");
             } catch (error) {
-              console.error('Error taking screenshot:', error);
+              console.error("Error taking screenshot:", error);
               process.exit(1);
             }
-          }
-
-          takeScreenshot();
-          EOF
-      - name: Take Screenshot
-        run: node take_screenshot.js
+          })();
+          '
+          convert screenshots/screenshot.png screenshots/screenshot.bmp
+          rm screenshots/screenshot.png
+          echo "Screenshot converted to BMP"
       - name: Commit Screenshot
         uses: stefanzweifel/git-auto-commit-action@v4
         with:

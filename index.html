@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Current Time</title>
+<style>
+    body {
+        background-color: #f0f8ff;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .time-container {
+        text-align: center;
+        background-color: #fff;
+        padding: 50px 80px;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+    .time {
+        font-size: 80px;
+        font-weight: 200;
+        color: #333;
+        margin: 0;
+    }
+    .date {
+        font-size: 24px;
+        font-weight: 200;
+        color: #777;
+        margin: 10px 0 0;
+    }
+</style>
+</head>
+<body>
+
+<div class="time-container">
+    <p class="time" id="time"></p>
+    <p class="date" id="date"></p>
+</div>
+
+<script>
+function updateTime() {
+    var now = new Date();
+    var timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    var dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('time').textContent = now.toLocaleTimeString([], timeOptions);
+    document.getElementById('date').textContent = now.toLocaleDateString([], dateOptions);
+}
+updateTime();
+setInterval(updateTime, 1000);
+</script>
+
+</body>
+</html>

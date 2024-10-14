@@ -1,7 +1,7 @@
 name: Take Webpage Screenshot
 on:
   schedule:
-    - cron: '* * * * *'  # Run every minute
+    - cron: '0 * * * *'
   workflow_dispatch:
     inputs:
       url:
@@ -24,43 +24,35 @@ jobs:
         run: npm install puppeteer
       - name: Create Screenshots Directory
         run: mkdir -p screenshots
-      - name: Take Screenshots Every 10 Seconds
+      - name: Take Screenshot and Convert to BMP
         run: |
-          for i in {1..6}  # Run 6 times (once every 10 seconds for a minute)
-          do
-            node -e '
-            const puppeteer = require("puppeteer");
-            (async () => {
-              try {
-                const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
-                const page = await browser.newPage();
-                await page.setViewport({
-                  width: 480,
-                  height: 800,
-                  deviceScaleFactor: 1,
-                });
-                const url = process.env.INPUT_URL || "https://benjennings.design";
-                await page.goto(url, { waitUntil: "networkidle2" });
-                const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-                await page.screenshot({ path: `screenshots/screenshot-${timestamp}.png`, fullPage: false });
-                await browser.close();
-                console.log(`Screenshot saved as PNG: screenshot-${timestamp}.png`);
-              } catch (error) {
-                console.error("Error taking screenshot:", error);
-                process.exit(1);
-              }
-            })();
-            '
-            convert "screenshots/screenshot-$(ls -t screenshots | head -n1)" -resize 480x800! "screenshots/screenshot-$(ls -t screenshots | head -n1 | sed 's/\.png$/.bmp/')"
-            rm "screenshots/screenshot-$(ls -t screenshots | head -n1 | grep '\.png$')"
-            echo "Screenshot converted to BMP (480x800)"
-            
-            if [ $i -lt 6 ]; then
-              sleep 10
-            fi
-          done
-      - name: Commit Screenshots
+          node -e '
+          const puppeteer = require("puppeteer");
+          (async () => {
+            try {
+              const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
+              const page = await browser.newPage();
+              await page.setViewport({
+                width: 480,
+                height: 800,
+                deviceScaleFactor: 1,
+              });
+              const url = process.env.INPUT_URL || "https://benjennings.design";
+              await page.goto(url, { waitUntil: "networkidle2" });
+              await page.screenshot({ path: "screenshots/screenshot.png", fullPage: false });
+              await browser.close();
+              console.log("Screenshot saved as PNG");
+            } catch (error) {
+              console.error("Error taking screenshot:", error);
+              process.exit(1);
+            }
+          })();
+          '
+          convert screenshots/screenshot.png -resize 480x800! screenshots/screenshot.bmp
+          rm screenshots/screenshot.png
+          echo "Screenshot converted to BMP (480x800)"
+      - name: Commit Screenshot
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: 'Add new screenshots [skip ci]'
+          commit_message: 'Add new screenshot [skip ci]'
           file_pattern: screenshots/*.bmp

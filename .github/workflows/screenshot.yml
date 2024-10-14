@@ -7,7 +7,7 @@ on:
       url:
         description: 'URL of the webpage to screenshot'
         required: false
-        default: 'https://benjennings.design'
+        default: 'https://bwjennings.github.io/display'
 permissions:
   contents: write
 jobs:
@@ -37,7 +37,7 @@ jobs:
                 height: 800,
                 deviceScaleFactor: 1,
               });
-              const url = process.env.INPUT_URL || "https://benjennings.design";
+              const url = process.env.INPUT_URL || "https://bwjennings.github.io/display";
               await page.goto(url, { waitUntil: "networkidle2" });
               await page.screenshot({ path: "screenshots/screenshot.png", fullPage: false });
               await browser.close();

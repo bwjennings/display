@@ -2,7 +2,7 @@ name: Take Webpage Screenshot
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Runs every hour at the top of the hour
+    - cron: '0 * * * *'  # Runs every hour
   workflow_dispatch:
     inputs:
       url:
@@ -11,7 +11,7 @@ on:
         default: 'https://benjennings.design'
 
 permissions:
-  contents: write  # Allows the workflow to commit to the repository
+  contents: write
 
 jobs:
   capture_screenshot:
@@ -23,10 +23,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Install Dependencies
-        run: npm install puppeteer jimp
+        run: npm install puppeteer@latest jimp@latest
 
       - name: Create Screenshots Directory
         run: mkdir -p screenshots
@@ -36,7 +36,7 @@ jobs:
           node -e '
           const puppeteer = require("puppeteer");
           const fs = require("fs");
-          const Jimp = require("jimp").default;  // Adjusted import
+          const Jimp = require("jimp").default;
 
           (async () => {
             try {
@@ -70,7 +70,7 @@ jobs:
               await browser.close();
               console.log("Screenshot saved to", bmpFilePath);
             } catch (error) {
-              console.error("Error taking screenshot:", error);
+              console.error("Error taking screenshot:", error.stack);
               process.exit(1);
             }
           })();

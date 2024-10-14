@@ -26,7 +26,7 @@ jobs:
           node-version: '18'
 
       - name: Install Dependencies
-        run: npm install puppeteer sharp
+        run: npm install puppeteer jimp
 
       - name: Create Screenshots Directory
         run: mkdir -p screenshots
@@ -36,7 +36,7 @@ jobs:
           node -e '
           const puppeteer = require("puppeteer");
           const fs = require("fs");
-          const sharp = require("sharp");
+          const Jimp = require("jimp");
 
           (async () => {
             try {
@@ -49,7 +49,6 @@ jobs:
               const url = process.env.INPUT_URL || "https://benjennings.design";
               await page.goto(url, { waitUntil: "networkidle2" });
 
-              const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
               const pngFilePath = `screenshots/screenshot.png`;
               const bmpFilePath = `screenshots/screenshot.bmp`;
 
@@ -61,10 +60,9 @@ jobs:
               // Take the screenshot in PNG format
               await page.screenshot({ path: pngFilePath });
 
-              // Convert PNG to BMP using sharp
-              await sharp(pngFilePath)
-                .toFormat("bmp")
-                .toFile(bmpFilePath);
+              // Convert PNG to BMP using Jimp
+              const image = await Jimp.read(pngFilePath);
+              await image.writeAsync(bmpFilePath);
 
               // Delete the PNG file if you only want the BMP file
               fs.unlinkSync(pngFilePath);

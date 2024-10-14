@@ -1,49 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Current Weather in Indianapolis</title>
-<style>
-    p{
-        margin: 0px;
-        line-height: 100%;
+    <meta charset="UTF-8">
+    <title>Current Weather in Indianapolis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    }
-    body {
-        box-sizing: border-box;
-        background-image: url(weather.webp);
-        background-position: 65%; /* Center the image */
-        background-repeat: no-repeat; /* Do not repeat the image */
-        background-size: cover;
-        color: white;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        display: flex;
-        justify-content: start;
-        padding: 40px;
-        align-items: end;
-        height: 800px;
-        margin: 0px;
-    }
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap');
 
-    .weather-container{
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        background-color: black;
-        padding: 40px;
-    }
-    .temperature {
-       font-size: 120px;
-     margin: 0;
-    }
+        p {
+            margin: 0px;
+            line-height: 100%;
 
-    .condition{
-        font-size: 48px;
-    }
-   
-   
-</style>
+        }
+
+        body {
+            font-family: "Roboto Flex", sans-serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+            font-variation-settings:
+                "slnt" 0,
+                "wdth" 100,
+                "GRAD" 0,
+                "XOPQ" 96,
+                "XTRA" 468,
+                "YOPQ" 79,
+                "YTAS" 750,
+                "YTDE" -203,
+                "YTFI" 738,
+                "YTLC" 514,
+                "YTUC" 712;
+            box-sizing: border-box;
+            background-image: url(weather2.webp);
+            background-position: 65%;
+            /* Center the image */
+            background-repeat: no-repeat;
+            /* Do not repeat the image */
+            background-size: cover;
+            color: white;
+            display: flex;
+            justify-content: start;
+            padding: 40px;
+            align-items: end;
+            height: 800px;
+            width:480px;
+            margin: 0px;
+            overflow: hidden;
+        }
+
+        .weather-container {
+            display: flex;
+flex-grow: 1;            flex-direction: column;
+            gap: 16px;
+            background-color: black;
+            padding: 40px;
+        }
+
+        .temperature {
+            font-size: 120px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .condition {
+            font-size: 32px;
+        }
+    </style>
+
 </head>
+
 <body>
 
     <div class="weather-container">
@@ -51,50 +78,50 @@
         <p class="condition" id="condition"></p>
         <p class="timestamp" id="timestamp"></p>
     </div>
-    
+
     <script>
         async function getWeather() {
             try {
                 // Coordinates for Indianapolis
                 const latitude = 39.83963;
                 const longitude = -86.14519;
-        
+
                 // Fetch the gridpoint information
                 const pointResponse = await fetch(`https://api.weather.gov/points/${latitude},${longitude}`);
                 const pointData = await pointResponse.json();
-        
+
                 // Extract the observation stations URL
                 const observationStationsUrl = pointData.properties.observationStations;
-        
+
                 // Fetch the list of observation stations
                 const stationsResponse = await fetch(observationStationsUrl);
                 const stationsData = await stationsResponse.json();
-        
+
                 // Get the first station ID
                 const stationId = stationsData.features[0].properties.stationIdentifier;
-        
+
                 // Fetch the latest observations from the station
                 const observationsUrl = `https://api.weather.gov/stations/${stationId}/observations/latest`;
                 const observationsResponse = await fetch(observationsUrl);
                 const observationsData = await observationsResponse.json();
-        
+
                 // Extract the temperature and weather conditions
                 const temperatureC = observationsData.properties.temperature.value;
                 const textDescription = observationsData.properties.textDescription;
-        
+
                 // Convert temperature from Celsius to Fahrenheit
-                const temperatureF = (temperatureC * 9/5) + 32;
-        
+                const temperatureF = (temperatureC * 9 / 5) + 32;
+
                 // Format the temperature to one decimal place
-                const formattedTemperature = temperatureF;
-        
+                const formattedTemperature = Math.round(temperatureF);
+
                 // Get the current local time
                 const now = new Date();
                 const hours = now.getHours() % 12 || 12; // Convert to 12-hour format
                 const minutes = now.getMinutes().toString().padStart(2, '0');
                 const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
                 const formattedTime = `${hours}:${minutes} ${ampm}`;
-        
+
                 // Update the UI with the weather data and current time
                 document.getElementById('temperature').textContent = `${formattedTemperature}°`;
                 document.getElementById('condition').textContent = textDescription;
@@ -106,11 +133,11 @@
                 document.getElementById('timestamp').textContent = '';
             }
         }
-        
+
         // Call the function when the page loads
         getWeather();
-        </script>
-    
-    </body>
+    </script>
+
+</body>
 
 </html>

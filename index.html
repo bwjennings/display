@@ -4,33 +4,35 @@
 <meta charset="UTF-8">
 <title>Current Weather in Indianapolis</title>
 <style>
+    p{
+        margin: 0px;
+        line-height: 110%;
+
+    }
     body {
-        background-color: #f0f8ff;
+        box-sizing: border-box;
+        background-color: black;
+        color: white;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
+        justify-content: start;
+        padding: 20dvw;
+        align-items: end;
+        height: 800px;
+        margin: 0px;
     }
-    .weather-container {
-        text-align: center;
-        background-color: #fff;
-        padding: 50px 80px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    }
+
     .temperature {
-        font-size: 120px;
-        font-weight: 800;
-        color: #333;
-        margin: 0;
+       font-size: 120px;
+     line-height: 110%;
+     margin: 0;
     }
-    .condition {
-        font-size: 24px;
-        font-weight: 400;
-        color: black;
-        margin: 10px 0 0;
+
+    .condition{
+        font-size: 48px;
     }
+   
+   
 </style>
 </head>
 <body>
@@ -45,8 +47,8 @@
         async function getWeather() {
             try {
                 // Coordinates for Indianapolis
-                const latitude = 39.7684;
-                const longitude = -86.1581;
+                const latitude = 39.83963;
+                const longitude = -86.14519;
         
                 // Fetch the gridpoint information
                 const pointResponse = await fetch(`https://api.weather.gov/points/${latitude},${longitude}`);
@@ -75,7 +77,7 @@
                 const temperatureF = (temperatureC * 9/5) + 32;
         
                 // Format the temperature to one decimal place
-                const formattedTemperature = temperatureF.toFixed(1);
+                const formattedTemperature = temperatureF;
         
                 // Get the current local time
                 const now = new Date();
@@ -85,7 +87,7 @@
                 const formattedTime = `${hours}:${minutes} ${ampm}`;
         
                 // Update the UI with the weather data and current time
-                document.getElementById('temperature').textContent = `${formattedTemperature}°F`;
+                document.getElementById('temperature').textContent = `${formattedTemperature}°`;
                 document.getElementById('condition').textContent = textDescription;
                 document.getElementById('timestamp').textContent = `${formattedTime}`;
             } catch (error) {

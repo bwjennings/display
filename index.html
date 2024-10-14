@@ -35,45 +35,71 @@
 </head>
 <body>
 
-<div class="weather-container">
-    <p class="temperature" id="temperature">Loading...</p>
-    <p class="condition" id="condition"></p>
-</div>
+    <div class="weather-container">
+        <p class="temperature" id="temperature">Loading...</p>
+        <p class="condition" id="condition"></p>
+        <p class="timestamp" id="timestamp"></p>
+    </div>
+    
+    <script>
+        async function getWeather() {
+            try {
+                // Coordinates for Indianapolis
+                const latitude = 39.7684;
+                const longitude = -86.1581;
+        
+                // Fetch the gridpoint information
+                const pointResponse = await fetch(`https://api.weather.gov/points/${latitude},${longitude}`);
+                const pointData = await pointResponse.json();
+        
+                // Extract the observation stations URL
+                const observationStationsUrl = pointData.properties.observationStations;
+        
+                // Fetch the list of observation stations
+                const stationsResponse = await fetch(observationStationsUrl);
+                const stationsData = await stationsResponse.json();
+        
+                // Get the first station ID
+                const stationId = stationsData.features[0].properties.stationIdentifier;
+        
+                // Fetch the latest observations from the station
+                const observationsUrl = `https://api.weather.gov/stations/${stationId}/observations/latest`;
+                const observationsResponse = await fetch(observationsUrl);
+                const observationsData = await observationsResponse.json();
+        
+                // Extract the temperature and weather conditions
+                const temperatureC = observationsData.properties.temperature.value;
+                const textDescription = observationsData.properties.textDescription;
+        
+                // Convert temperature from Celsius to Fahrenheit
+                const temperatureF = (temperatureC * 9/5) + 32;
+        
+                // Format the temperature to one decimal place
+                const formattedTemperature = temperatureF.toFixed(1);
+        
+                // Get the current local time
+                const now = new Date();
+                const hours = now.getHours() % 12 || 12; // Convert to 12-hour format
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+                const formattedTime = `${hours}:${minutes} ${ampm}`;
+        
+                // Update the UI with the weather data and current time
+                document.getElementById('temperature').textContent = `${formattedTemperature}°F`;
+                document.getElementById('condition').textContent = textDescription;
+                document.getElementById('timestamp').textContent = `${formattedTime}`;
+            } catch (error) {
+                console.error('Error fetching weather data:', error);
+                document.getElementById('temperature').textContent = 'N/A';
+                document.getElementById('condition').textContent = 'Unable to retrieve weather data.';
+                document.getElementById('timestamp').textContent = '';
+            }
+        }
+        
+        // Call the function when the page loads
+        getWeather();
+        </script>
+    
+    </body>
 
-<script>
-async function getWeather() {
-    try {
-        // Coordinates for Indianapolis
-        const latitude = 39.7684;
-        const longitude = -86.1581;
-
-        // Fetch the gridpoint information
-        const pointResponse = await fetch(`https://api.weather.gov/points/${latitude},${longitude}`);
-        const pointData = await pointResponse.json();
-
-        // Extract the forecast URL
-        const forecastUrl = pointData.properties.forecastHourly;
-
-        // Fetch the weather forecast
-        const forecastResponse = await fetch(forecastUrl);
-        const forecastData = await forecastResponse.json();
-
-        // Get the current weather (first period)
-        const currentPeriod = forecastData.properties.periods[0];
-
-        // Update the UI with the weather data
-        document.getElementById('temperature').textContent = `${currentPeriod.temperature}°${currentPeriod.temperatureUnit}`;
-        document.getElementById('condition').textContent = currentPeriod.shortForecast;
-    } catch (error) {
-        console.error('Error fetching weather data:', error);
-        document.getElementById('temperature').textContent = 'N/A';
-        document.getElementById('condition').textContent = 'Unable to retrieve weather data.';
-    }
-}
-
-// Call the function when the page loads
-getWeather();
-</script>
-
-</body>
 </html>

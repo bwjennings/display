@@ -1,81 +1,53 @@
 name: Take Webpage Screenshot
-
 on:
   schedule:
-    - cron: '0 * * * *'  # Runs every hour
+    - cron: '0 * * * *'
   workflow_dispatch:
     inputs:
       url:
         description: 'URL of the webpage to screenshot'
         required: false
         default: 'https://benjennings.design'
-
 permissions:
   contents: write
-
 jobs:
   capture_screenshot:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
-
-      - name: Install Dependencies
-        run: npm install puppeteer@latest jimp@latest
-
+          node-version: '18'
+      - name: Install Puppeteer and jimp
+        run: npm install puppeteer jimp
       - name: Create Screenshots Directory
         run: mkdir -p screenshots
-
       - name: Take Screenshot
         run: |
           node -e '
           const puppeteer = require("puppeteer");
           const fs = require("fs");
-          const Jimp = require("jimp").default;
-
+          const Jimp = require("jimp");
           (async () => {
             try {
               const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
               const page = await browser.newPage();
-
-              // Set viewport size to 480x800 pixels
-              await page.setViewport({ width: 480, height: 800 });
-
               const url = process.env.INPUT_URL || "https://benjennings.design";
               await page.goto(url, { waitUntil: "networkidle2" });
-
-              const pngFilePath = `screenshots/screenshot.png`;
-              const bmpFilePath = `screenshots/screenshot.bmp`;
-
-              // Ensure the screenshots directory exists
-              if (!fs.existsSync("screenshots")) {
-                fs.mkdirSync("screenshots");
-              }
-
-              // Take the screenshot in PNG format
-              await page.screenshot({ path: pngFilePath });
-
-              // Convert PNG to BMP using Jimp
-              const image = await Jimp.read(pngFilePath);
-              await image.writeAsync(bmpFilePath);
-
-              // Delete the PNG file if you only want the BMP file
-              fs.unlinkSync(pngFilePath);
-
+              const pngBuffer = await page.screenshot();
               await browser.close();
-              console.log("Screenshot saved to", bmpFilePath);
+              const image = await Jimp.read(pngBuffer);
+              const filepath = `screenshots/screenshot.bmp`;
+              await image.writeAsync(filepath);
+              console.log("Screenshot saved to", filepath);
             } catch (error) {
-              console.error("Error taking screenshot:", error.stack);
+              console.error("Error taking screenshot:", error);
               process.exit(1);
             }
           })();
           '
-
       - name: Commit Screenshot
         uses: stefanzweifel/git-auto-commit-action@v4
         with:

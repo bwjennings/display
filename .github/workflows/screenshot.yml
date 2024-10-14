@@ -32,9 +32,14 @@ jobs:
             try {
               const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
               const page = await browser.newPage();
+              await page.setViewport({
+                width: 480,
+                height: 800,
+                deviceScaleFactor: 1,
+              });
               const url = process.env.INPUT_URL || "https://benjennings.design";
               await page.goto(url, { waitUntil: "networkidle2" });
-              await page.screenshot({ path: "screenshots/screenshot.png" });
+              await page.screenshot({ path: "screenshots/screenshot.png", fullPage: false });
               await browser.close();
               console.log("Screenshot saved as PNG");
             } catch (error) {
@@ -43,9 +48,9 @@ jobs:
             }
           })();
           '
-          convert screenshots/screenshot.png screenshots/screenshot.bmp
+          convert screenshots/screenshot.png -resize 480x800! screenshots/screenshot.bmp
           rm screenshots/screenshot.png
-          echo "Screenshot converted to BMP"
+          echo "Screenshot converted to BMP (480x800)"
       - name: Commit Screenshot
         uses: stefanzweifel/git-auto-commit-action@v4
         with:

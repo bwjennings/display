@@ -6,25 +6,34 @@
 <style>
     p{
         margin: 0px;
-        line-height: 110%;
+        line-height: 100%;
 
     }
     body {
         box-sizing: border-box;
-        background-color: black;
+        background-image: url(/weather.webp);
+        background-position: 65%; /* Center the image */
+        background-repeat: no-repeat; /* Do not repeat the image */
+        background-size: cover;
         color: white;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         display: flex;
         justify-content: start;
-        padding: 20dvw;
+        padding: 40px;
         align-items: end;
         height: 800px;
         margin: 0px;
     }
 
+    .weather-container{
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        background-color: black;
+        padding: 40px;
+    }
     .temperature {
        font-size: 120px;
-     line-height: 110%;
      margin: 0;
     }
 

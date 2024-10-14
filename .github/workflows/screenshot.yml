@@ -20,8 +20,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Install Puppeteer and jimp
-        run: npm install puppeteer jimp
+      - name: Install Puppeteer
+        run: npm install puppeteer 
+      - name: Install jimp
+        run: pnpm add jimp
       - name: Create Screenshots Directory
         run: mkdir -p screenshots
       - name: Take Screenshot

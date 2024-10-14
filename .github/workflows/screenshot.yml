@@ -20,36 +20,39 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Install Puppeteer
-        run: npm install puppeteer 
-      - name: Install jimp
-        run: pnpm add jimp
+      - name: Install Puppeteer and jimp
+        run: npm install puppeteer jimp
       - name: Create Screenshots Directory
         run: mkdir -p screenshots
-      - name: Take Screenshot
+      - name: Create screenshot script
         run: |
-          node -e '
-          const puppeteer = require("puppeteer");
-          const fs = require("fs").promises;
-          const Jimp = require("jimp");
-          (async () => {
+          cat << EOF > take_screenshot.js
+          const puppeteer = require('puppeteer');
+          const Jimp = require('jimp');
+
+          async function takeScreenshot() {
             try {
-              const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
+              const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
               const page = await browser.newPage();
-              const url = process.env.INPUT_URL || "https://benjennings.design";
-              await page.goto(url, { waitUntil: "networkidle2" });
+              const url = process.env.INPUT_URL || 'https://benjennings.design';
+              await page.goto(url, { waitUntil: 'networkidle2' });
               const pngBuffer = await page.screenshot();
               await browser.close();
+
               const image = await Jimp.read(pngBuffer);
-              const filepath = `screenshots/screenshot.bmp`;
+              const filepath = 'screenshots/screenshot.bmp';
               await image.writeAsync(filepath);
-              console.log("Screenshot saved to", filepath);
+              console.log('Screenshot saved to', filepath);
             } catch (error) {
-              console.error("Error taking screenshot:", error);
+              console.error('Error taking screenshot:', error);
               process.exit(1);
             }
-          })();
-          '
+          }
+
+          takeScreenshot();
+          EOF
+      - name: Take Screenshot
+        run: node take_screenshot.js
       - name: Commit Screenshot
         uses: stefanzweifel/git-auto-commit-action@v4
         with:

@@ -8,7 +8,7 @@ on:
       url:
         description: 'URL of the webpage to screenshot'
         required: false
-        default: 'https://example.com'
+        default: 'https://benjennings.design'
 
 permissions:
   contents: write  # Allows the workflow to commit to the repository
@@ -46,7 +46,7 @@ jobs:
               // Set viewport size to 480x800 pixels
               await page.setViewport({ width: 480, height: 800 });
 
-              const url = process.env.INPUT_URL || "https://example.com";
+              const url = process.env.INPUT_URL || "https://benjennigns.design";
               await page.goto(url, { waitUntil: "networkidle2" });
 
               const timestamp = new Date().toISOString().replace(/[:.]/g, "-");

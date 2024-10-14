@@ -85,43 +85,46 @@ flex-grow: 1;            flex-direction: column;
                 // Coordinates for Indianapolis
                 const latitude = 39.83963;
                 const longitude = -86.14519;
-
+        
                 // Fetch the gridpoint information
                 const pointResponse = await fetch(`https://api.weather.gov/points/${latitude},${longitude}`);
                 const pointData = await pointResponse.json();
-
+        
                 // Extract the observation stations URL
                 const observationStationsUrl = pointData.properties.observationStations;
-
+        
                 // Fetch the list of observation stations
                 const stationsResponse = await fetch(observationStationsUrl);
                 const stationsData = await stationsResponse.json();
-
+        
                 // Get the first station ID
                 const stationId = stationsData.features[0].properties.stationIdentifier;
-
+        
                 // Fetch the latest observations from the station
                 const observationsUrl = `https://api.weather.gov/stations/${stationId}/observations/latest`;
                 const observationsResponse = await fetch(observationsUrl);
                 const observationsData = await observationsResponse.json();
-
+        
                 // Extract the temperature and weather conditions
                 const temperatureC = observationsData.properties.temperature.value;
                 const textDescription = observationsData.properties.textDescription;
-
+        
                 // Convert temperature from Celsius to Fahrenheit
-                const temperatureF = (temperatureC * 9 / 5) + 32;
-
-                // Format the temperature to one decimal place
+                const temperatureF = (temperatureC * 9/5) + 32;
+        
+                // Round the temperature to the nearest whole number
                 const formattedTemperature = Math.round(temperatureF);
-
-                // Get the current local time
+        
+                // Get the current time in Eastern Time
                 const now = new Date();
-                const hours = now.getHours() % 12 || 12; // Convert to 12-hour format
-                const minutes = now.getMinutes().toString().padStart(2, '0');
-                const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
-                const formattedTime = `${hours}:${minutes} ${ampm}`;
-
+                const options = {
+                    timeZone: 'America/New_York',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    hour12: true,
+                };
+                const formattedTime = new Intl.DateTimeFormat('en-US', options).format(now);
+        
                 // Update the UI with the weather data and current time
                 document.getElementById('temperature').textContent = `${formattedTemperature}°`;
                 document.getElementById('condition').textContent = textDescription;

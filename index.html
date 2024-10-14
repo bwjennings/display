@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Current Time</title>
+<title>Current Weather in Indianapolis</title>
 <style>
     body {
         background-color: #f0f8ff;
@@ -13,20 +13,20 @@
         height: 100vh;
         margin: 0;
     }
-    .time-container {
+    .weather-container {
         text-align: center;
         background-color: #fff;
         padding: 50px 80px;
         border-radius: 15px;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     }
-    .time {
+    .temperature {
         font-size: 80px;
         font-weight: 200;
         color: #333;
         margin: 0;
     }
-    .date {
+    .condition {
         font-size: 24px;
         font-weight: 200;
         color: #777;
@@ -36,21 +36,44 @@
 </head>
 <body>
 
-<div class="time-container">
-    <p class="time" id="time"></p>
-    <p class="date" id="date"></p>
+<div class="weather-container">
+    <p class="temperature" id="temperature">Loading...</p>
+    <p class="condition" id="condition"></p>
 </div>
 
 <script>
-function updateTime() {
-    var now = new Date();
-    var timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
-    var dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    document.getElementById('time').textContent = now.toLocaleTimeString([], timeOptions);
-    document.getElementById('date').textContent = now.toLocaleDateString([], dateOptions);
+async function getWeather() {
+    try {
+        // Coordinates for Indianapolis
+        const latitude = 39.7684;
+        const longitude = -86.1581;
+
+        // Fetch the gridpoint information
+        const pointResponse = await fetch(`https://api.weather.gov/points/${latitude},${longitude}`);
+        const pointData = await pointResponse.json();
+
+        // Extract the forecast URL
+        const forecastUrl = pointData.properties.forecastHourly;
+
+        // Fetch the weather forecast
+        const forecastResponse = await fetch(forecastUrl);
+        const forecastData = await forecastResponse.json();
+
+        // Get the current weather (first period)
+        const currentPeriod = forecastData.properties.periods[0];
+
+        // Update the UI with the weather data
+        document.getElementById('temperature').textContent = `${currentPeriod.temperature}°${currentPeriod.temperatureUnit}`;
+        document.getElementById('condition').textContent = currentPeriod.shortForecast;
+    } catch (error) {
+        console.error('Error fetching weather data:', error);
+        document.getElementById('temperature').textContent = 'N/A';
+        document.getElementById('condition').textContent = 'Unable to retrieve weather data.';
+    }
 }
-updateTime();
-setInterval(updateTime, 1000);
+
+// Call the function when the page loads
+getWeather();
 </script>
 
 </body>

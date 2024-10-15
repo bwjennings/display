@@ -1,7 +1,7 @@
 name: Take Webpage Screenshot
 on:
   schedule:
-    - cron: "1/10 * * * *"
+    - cron: "0/10 * * * *"
   workflow_dispatch:
     inputs:
       url:
@@ -39,6 +39,7 @@ jobs:
               });
               const url = process.env.INPUT_URL || "https://bwjennings.github.io/display";
               await page.goto(url, { waitUntil: "networkidle2" });
+              await page.waitForTimeout(2000);
               await page.screenshot({ path: "screenshots/screenshot.png", fullPage: false });
               await browser.close();
               console.log("Screenshot saved as PNG");

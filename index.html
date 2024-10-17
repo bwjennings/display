@@ -9,6 +9,24 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&display=swap');
+       
+        :root {
+            /* Initial values for color stops */
+            --start-color: oklch(65% 0.5 235);
+            --end-color: oklch(85% 0.7 275);
+          }
+          
+          body {
+            background: linear-gradient(
+              135deg,
+              var(--start-color),
+              var(--end-color)
+            );
+            min-height: 100vh;
+            margin: 0;
+            transition: background 0.5s ease-in-out;
+          }
+          
         p {
             margin: 0px;
             line-height: 100%;
@@ -33,12 +51,7 @@
         body {
            
             box-sizing: border-box;
-            background-image: url(weather2.webp);
-            background-position: 65%;
-            /* Center the image */
-            background-repeat: no-repeat;
-            /* Do not repeat the image */
-            background-size: cover;
+       
             color: white;
             display: flex;
             justify-content: start;
@@ -139,6 +152,31 @@ flex-grow: 1;            flex-direction: column;
 
         // Call the function when the page loads
         getWeather();
+
+        function setGradientColors(hours) {
+            const percentageOfDay = hours / 24;
+        
+            // Calculate lightness, chroma, and hue based on the time of day
+            const startLightness = 65 + 10 * Math.sin(percentageOfDay * 2 * Math.PI);
+            const endLightness = 75 + 10 * Math.sin(percentageOfDay * 2 * Math.PI);
+            const startChroma = 0.5 + 0.5 * Math.abs(Math.cos(percentageOfDay * 2 * Math.PI));
+            const endChroma = 0.6 + 0.4 * Math.abs(Math.cos(percentageOfDay * 2 * Math.PI));
+            const startHue = 235 + 100 * Math.sin(percentageOfDay * 2 * Math.PI);
+            const endHue = 275 + 100 * Math.sin(percentageOfDay * 2 * Math.PI);
+        
+            document.documentElement.style.setProperty(
+              "--start-color",
+              `oklch(${startLightness}% ${startChroma} ${startHue})`
+            );
+            document.documentElement.style.setProperty(
+              "--end-color",
+              `oklch(${endLightness}% ${endChroma} ${endHue})`
+            );
+          }
+        
+          // Set colors on load and update every hour
+          setGradientColors(new Date().getHours());
+          setInterval(() => setGradientColors(new Date().getHours()), 3600000);
     </script>
 
 </body>

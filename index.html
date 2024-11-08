@@ -11,22 +11,30 @@
         @import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&display=swap');
        
         :root {
-            /* Initial values for color stops */
-            --start-color: oklch(65% 0.5 235);
-            --end-color: oklch(85% 0.7 275);
-          }
-          
-          body {
-            background: linear-gradient(
+            /* You can remove these variables since we're not using the gradient */
+            /* --start-color: oklch(65% 0.5 235);
+            --end-color: oklch(85% 0.7 275); */
+        }
+        
+        body {
+            /* Remove the background gradient */
+            /* background: linear-gradient(
               135deg,
               var(--start-color),
               var(--end-color)
-            );
-            min-height: 100vh;
+            ); */
+            box-sizing: border-box;
+            height: 100dvh;
             margin: 0;
             transition: background 0.5s ease-in-out;
-          }
-          
+            /* Add these properties to handle the background image */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+padding: 40px;
+        }
+        
         p {
             margin: 0px;
             line-height: 100%;
@@ -48,27 +56,18 @@
 
         }
 
-        body {
-           
-            box-sizing: border-box;
-       
-            color: white;
-            display: flex;
-            justify-content: start;
-            padding: 40px;
-            align-items: end;
-            height: 800px;
-            width:480px;
-            margin: 0px;
-            overflow: hidden;
-        }
-
         .weather-container {
             display: flex;
-flex-grow: 1;            flex-direction: column;
+            flex-grow: 1;
+            flex-direction: column;
             gap: 16px;
-            background-color: black;
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             padding: 40px;
+            color: white;
+            box-sizing: border-box;
+            margin-top:auto;
         }
 
         .temperature {
@@ -153,30 +152,28 @@ flex-grow: 1;            flex-direction: column;
         // Call the function when the page loads
         getWeather();
 
-        function setGradientColors(hours) {
-            const percentageOfDay = hours / 24;
-        
-            // Calculate lightness, chroma, and hue based on the time of day
-            const startLightness = 65 + 10 * Math.sin(percentageOfDay * 2 * Math.PI);
-            const endLightness = 75 + 10 * Math.sin(percentageOfDay * 2 * Math.PI);
-            const startChroma = 0.5 + 0.5 * Math.abs(Math.cos(percentageOfDay * 2 * Math.PI));
-            const endChroma = 0.6 + 0.4 * Math.abs(Math.cos(percentageOfDay * 2 * Math.PI));
-            const startHue = 235 + 100 * Math.sin(percentageOfDay * 2 * Math.PI);
-            const endHue = 275 + 100 * Math.sin(percentageOfDay * 2 * Math.PI);
-        
-            document.documentElement.style.setProperty(
-              "--start-color",
-              `oklch(${startLightness}% ${startChroma} ${startHue})`
-            );
-            document.documentElement.style.setProperty(
-              "--end-color",
-              `oklch(${endLightness}% ${endChroma} ${endHue})`
-            );
-          }
-        
-          // Set colors on load and update every hour
-          setGradientColors(new Date().getHours());
-          setInterval(() => setGradientColors(new Date().getHours()), 3600000);
+        // Remove the gradient color function since it's no longer needed
+        // function setGradientColors(hours) { ... }
+
+        // Set a random background image
+        (function() {
+            // Array of image paths in the 'images' folder
+            const images = [
+                'images/image 1.jpg',
+                'images/image 2.jpg',
+                'images/image 3.jpg',
+                'images/image 4.jpg',
+                'images/image 5.jpg',
+                 'images/image 6.jpg',
+                  'images/image 7.jpg'
+            ];
+
+            // Randomly select an image
+            const randomImage = images[Math.floor(Math.random() * images.length)];
+
+            // Set the background image of the body
+            document.body.style.backgroundImage = `url('${randomImage}')`;
+        })();
     </script>
 
 </body>
